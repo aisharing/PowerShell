@@ -1,0 +1,27 @@
+# This script could be used to split a file into smaller parts
+# Input a file with its location
+$location_file = read-host -Prompt "Please enter the file name with its full path"
+$location = Split-Path -Path $location_file
+$main_file = Split-Path -Path $location_file -LeafBase
+
+# Read the file content and decide the preferred subfile number
+$file_content = Get-Content $location_file
+Write-Host -Object "The total lines of the file: " -NoNewline
+$file_content.Count
+$subfile_number = Read-Host -Prompt "Please enter the expected number of the subfiles"
+
+# Calculate the Start and the Stop point
+$step = [int]($file_content.Count / $subfile_number)
+[int]$start_number = Read-Host -Prompt "Please enter the SN of the START LINE that the file segmentation will start with"
+$stop_number = $start_number + $step
+
+# The main process of file segmentation
+$file_naming_sn = 1
+do {
+$file_content[$start_number..$stop_number] | Set-Content "$location\$main_file$file_naming_sn.txt"; 
+$start_number = $stop_number + 1; $stop_number = $start_number + $step; 
+$file_naming_sn++}
+while ($start_number -le $file_content.Count)
+
+# Program ending notice
+Write-Host -Object "File Segmentation Process completed."
